@@ -1,19 +1,14 @@
 library(tidyverse)
 
-# load data
 reviews <- read.csv("reviews.csv")
 
-# create review length variable
 reviews$review_length <- nchar(reviews$content)
 
-# convert score to categorical variable
 reviews$score <- as.factor(reviews$score)
 
-# remove missing values
 reviews <- reviews %>%
   drop_na(score, review_length)
 
-# publishable graph
 ggplot(reviews, aes(
   x = score,
   y = review_length,
