@@ -1,19 +1,19 @@
 library(tidyverse)
 
-# load data
+# загружаем данные
 reviews <- read.csv("reviews.csv")
 
-# create review length variable
+# создаем переменную длина
 reviews$review_length <- nchar(reviews$content)
 
-# convert score to factor
+# переводим оценку в категорию
 reviews$score <- as.factor(reviews$score)
 
-# remove missing values
+# удаляем отсутсвующие значения
 reviews <- reviews %>%
   drop_na(score, review_length)
 
-# highlight groups
+# добавляем категории и цвет категорий 
 reviews <- reviews %>%
   mutate(
     highlight = case_when(
@@ -23,37 +23,37 @@ reviews <- reviews %>%
     )
   )
 
-# median values
+# считаем медианы
 median_values <- reviews %>%
   group_by(score) %>%
   summarise(
     median_length = median(review_length)
   )
 
-# plot
+# строим график
 ggplot(reviews, aes(
   x = score,
   y = review_length,
   fill = highlight
 )) +
-  
+  # добавляем выбросы 
   geom_jitter(
     aes(color = highlight),
     width = 0.08,
     alpha = 0.12,
     size = 0.7
   ) +
-  
+  # добавляем боксплоты
   geom_boxplot(
     aes(fill = highlight),
-    alpha = 0.95,
+    alpha = 0.45,
     outlier.alpha = 0,
     width = 0.42,
     linewidth = 0.7,
     color = "gray30"
   ) +
 
-  
+  # добавляем значения медиан на график
   geom_text(
     data = median_values,
     aes(
@@ -119,10 +119,11 @@ ggplot(reviews, aes(
   #   color = "#2349b3"
   # ) +
   
+  # 
   scale_fill_manual(
     values = c(
-      "Negative (1-star)" = "#d8e7f5",
-      "Positive (5-star)" = "#1f5aa6",
+      "Negative (1-star)" = "#d95f5f",
+      "Positive (5-star)" = "#4CAF50",
       "Neutral (2–4 stars)" = "gray92"
     ),
     breaks = c(
@@ -133,8 +134,8 @@ ggplot(reviews, aes(
   
   scale_color_manual(
     values = c(
-      "Negative (1-star)" = "#9fc4ec",
-      "Positive (5-star)" = "#2166ac",
+      "Negative (1-star)" = "#d95f5f",
+      "Positive (5-star)" = "#4CAF50",
       "Neutral (2–4 stars)" = "gray70"
     ),
     breaks = c(
@@ -143,7 +144,7 @@ ggplot(reviews, aes(
     )
   ) +
   
-  # labels
+  # добавялем лейблы
   labs(
     title = "Negative Reviews Tend to Be Longer",
     subtitle = "Based on 50,000 Google Play reviews of the ChatGPT app",
@@ -152,7 +153,7 @@ ggplot(reviews, aes(
     caption = "Source: Google Play reviews for the ChatGPT app"
   ) +
   
-  # theme
+  # добавляем тему
   theme_minimal(base_size = 15, base_family = "Helvetica") +
 
   theme(
